@@ -5,6 +5,11 @@ import { renderCategories } from '../pages/Categories.js';
 import { renderAbout } from '../pages/About.js';
 import { renderContact } from '../pages/Contact.js';
 import { renderFeedback } from '../pages/Feedback.js';
+import { renderProfilePage } from '../pages/BloggerProfile.js';
+import { renderFullBlogPost } from '../pages/ReadMoreBlog.js';
+import { renderTermsOfUse } from '../pages/TermsOfUse.js';
+import { renderDiscussionForum } from '../pages/DiscussionForum.js';
+import { renderStories } from '../pages/Stories.js';
 
 const routes = {
     '/': renderHome,
@@ -13,7 +18,12 @@ const routes = {
     '/categories': renderCategories,
     '/about': renderAbout,
     '/contact': renderContact,
-    '/feedback': renderFeedback
+    '/feedback': renderFeedback,
+    '/profile': renderProfilePage,
+    '/discussion': renderDiscussionForum,
+    '/readmore': renderFullBlogPost,
+    '/termsOfUse': renderTermsOfUse,
+    '/stories': renderStories,
 };
 
 export function router() {

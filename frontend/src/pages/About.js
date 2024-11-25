@@ -1,13 +1,14 @@
+import toastr from "toastr";
 export function renderAbout(container) {
     container.innerHTML = `
         <div class="container mx-auto px-4 py-8">
             <header class="mb-8">
-                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-white">About WordWise</h1>
-                <p class="text-xl text-gray-600 dark:text-gray-400">Your trusted companion in language learning</p>
+                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-white" data-aos="fade-right" data-aos-delay="100">About WordWise</h1>
+                <p class="text-xl text-gray-600 dark:text-gray-400" data-aos="fade-right" data-aos-delay="300">Your trusted companion in language learning</p>
             </header>
 
             <main class="grid gap-8">
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-up" data-aos-delay="500">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Our Mission</h2>
                     <p class="text-gray-700 dark:text-gray-300 mb-4">
                         At WordWise, we believe that language is the key to understanding and connecting with the world. Our mission is to make language learning accessible, enjoyable, and effective for everyone, regardless of their background or learning style.
@@ -18,7 +19,7 @@ export function renderAbout(container) {
                     </div>
                 </section>
 
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-up" data-aos-delay="800">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">What Makes Us Unique</h2>
                     <div class="grid md:grid-cols-2 gap-4">
                         <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg">
@@ -40,7 +41,7 @@ export function renderAbout(container) {
                     </div>
                 </section>
 
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-up" data-aos-delay="500">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Contributors</h2>
                     <p class="text-gray-700 dark:text-gray-300 mb-4">
                         WordWise is an open-source project, and we're grateful for the contributions of developers from around the world. Here are our top contributors:
@@ -55,9 +56,9 @@ export function renderAbout(container) {
                     </div>
                 </section>
 
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-up" data-aos-delay="500">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Get in Touch</h2>
-                    <form id="contactForm" class="space-y-4">
+                    <form id="getInTouch" class="space-y-4">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
                             <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white">
@@ -89,13 +90,50 @@ export function renderAbout(container) {
     fetchContributors();
 
     // Form submission
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
+    document.getElementById('getInTouch').addEventListener('submit', async function (e) {
         e.preventDefault();
-        // Here you would typically send the form data to your server
-        // For this example, we'll just show a success message
-        document.getElementById('formSuccess').classList.remove('hidden');
-        this.reset();
+
+        // Get form values
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+
+        // Prepare data to send to the backend
+        const formData = {
+            name: name,
+            email: email,
+            message: message
+        };
+
+        try {
+            // Send form data to the backend
+            const response = await fetch('http://localhost:5000/api/getInTouch/saveGetInTouch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            console.log(response)
+            // Check if the response was successful
+            if (response.ok) {
+                console.log("Form successfully submitted:", formData);
+                document.getElementById('formSuccess').classList.remove('hidden');
+                toastr.info('We will reach you soon !')
+                this.reset();
+            } else {
+                toastr.warning('Form submission failed')
+                console.error("Form submission failed:", response.statusText);
+                alert("There was an issue submitting the form. Please try again.");
+            }
+        } catch (error) {
+            toastr.error('Error submitting form')
+            console.error("Error submitting form:", error);
+            alert("There was an error connecting to the server. Please try again.");
+        }
     });
+
 }
 
 async function fetchContributors() {
@@ -124,4 +162,24 @@ function renderContributor(username, profileUrl, avatarUrl) {
             </a>
         </div>
     `;
+}
+
+
+
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
 }

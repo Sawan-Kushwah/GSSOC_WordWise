@@ -1,15 +1,16 @@
+import toastr from "toastr";
 export function renderContact(container) {
     container.innerHTML = `
         <div class="container mx-auto px-4 py-8">
             <header class="mb-8">
-                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-white">Contact Us</h1>
-                <p class="text-xl text-gray-600 dark:text-gray-400">We'd love to hear from you</p>
+                <h1 class="text-4xl font-bold mb-2 text-gray-900 dark:text-white"  data-aos="fade-right" data-aos-delay="100">Contact Us</h1>
+                <p class="text-xl text-gray-600 dark:text-gray-400"  data-aos="fade-right" data-aos-delay="300">We'd love to hear from you</p>
             </header>
 
             <main class="grid gap-8 md:grid-cols-2">
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-right" data-aos-delay="500">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Send Us a Message</h2>
-                    <form id="contactForm" class="space-y-4">
+                    <form id="contactForm" class="space-y-4"  >
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
                             <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white">
@@ -44,7 +45,7 @@ export function renderContact(container) {
                     </div>
                 </section>
 
-                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" data-aos="fade-left" data-aos-delay="500">
                     <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Contact Information</h2>
                     <div class="space-y-4">
                         <div class="flex items-start">
@@ -63,11 +64,64 @@ export function renderContact(container) {
     `;
 
     // Form submission
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
+    document.getElementById('contactForm').addEventListener('submit', async function (e) {
         e.preventDefault();
-        // Here you would typically send the form data to your server
-        // For this example, we'll just show a success message
-        document.getElementById('formSuccess').classList.remove('hidden');
-        this.reset();
+
+        // Create a new FormData object from the form
+        const formData = new FormData(this);
+
+        // Convert FormData to an object
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            // Send form data to backend API
+            const response = await fetch('http://localhost:5000/api/contact/saveContact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            console.log(response)
+
+            if (response.ok) {
+                // Display success message and reset the form
+                document.getElementById('formSuccess').classList.remove('hidden');
+                toastr.info('We will contact you soon !')
+                this.reset();
+            } else {
+                // Handle error response
+                const errorData = await response.json();
+                console.error("Error submitting form:", errorData.message);
+                toastr.error('Error submitting contact form ')
+
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            toastr.error('Error submitting contact form')
+
+        }
     });
+
+
+}
+
+
+
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
 }
